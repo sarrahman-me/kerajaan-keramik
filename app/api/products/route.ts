@@ -13,11 +13,13 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '5', 10);
+    const search = searchParams.get('search') || '';
 
-    const totalItems = await collection.countDocuments();
+    const query = search ? { nama: { $regex: search, $options: 'i' } } : {};
+    const totalItems = await collection.countDocuments(query);
     const totalPages = Math.ceil(totalItems / limit);
 
-    const data = await collection.find({})
+    const data = await collection.find(query)
       .skip((page - 1) * limit)
       .limit(limit)
       .toArray();

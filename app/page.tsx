@@ -6,22 +6,54 @@ import { useEffect, useState } from 'react';
 export default function Home() {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 100;
+  const itemsPerPage = 50;
   const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+
+  // Debounce untuk menunda request API saat user mengetik
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // Menunggu 500ms setelah user berhenti mengetik
+
+    return () => {
+      clearTimeout(handler); // Membersihkan timeout jika user masih mengetik
+    };
+  }, [searchTerm]);
 
   useEffect(() => {
-    fetch(`/api/products?page=${currentPage}&limit=${itemsPerPage}`)
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    fetch(`/api/products?page=${currentPage}&limit=${itemsPerPage}&search=${debouncedSearchTerm}`, { signal })
       .then((res) => res.json())
       .then((result) => {
         setData(result.data);
         setTotalPages(result.totalPages);
       })
-      .catch((err) => console.error(err));
-  }, [currentPage]);
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+        }
+      });
+
+    return () => controller.abort(); // Membatalkan request lama saat ada request baru
+  }, [currentPage, debouncedSearchTerm]);
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Produk Kerajaan Keramik</h1>
+
+      {/* Search Input */}
+      <input
+        type="text"
+        placeholder="Cari produk..."
+        className="w-full p-2 border rounded mb-4"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
       <div className="overflow-x-auto">
         <table className="min-w-full border border-gray-300">
           <thead>
