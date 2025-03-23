@@ -10,21 +10,24 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Debounce untuk menunda request API saat user mengetik
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 500); // Menunggu 500ms setelah user berhenti mengetik
+    }, 500);
 
     return () => {
-      clearTimeout(handler); // Membersihkan timeout jika user masih mengetik
+      clearTimeout(handler);
     };
   }, [searchTerm]);
 
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
+
+    setIsLoading(true); // Set loading sebelum fetch
 
     fetch(`/api/products?page=${currentPage}&limit=${itemsPerPage}&search=${debouncedSearchTerm}`, { signal })
       .then((res) => res.json())
@@ -36,9 +39,10 @@ export default function Home() {
         if (err.name !== 'AbortError') {
           console.error(err);
         }
-      });
+      })
+      .finally(() => setIsLoading(false)); // Set loading selesai
 
-    return () => controller.abort(); // Membatalkan request lama saat ada request baru
+    return () => controller.abort();
   }, [currentPage, debouncedSearchTerm]);
 
   return (
@@ -65,36 +69,48 @@ export default function Home() {
             </tr>
           </thead>
           <tbody>
-            {data.map((item: IProduct, index) => (
-              <tr key={index}>
-                <td className="border p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                <td className="border p-2">{item.nama}</td>
-                <td className="border p-2">Rp {item.harga}</td>
-                <td className="border p-2">{item.isPromo ? '✅' : '❌'}</td>
+            {isLoading ? (
+              <tr>
+                <td colSpan={4} className="text-center p-4">Loading...</td>
               </tr>
-            ))}
+            ) : data.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="text-center p-4 text-red-500">Produk tidak ditemukan</td>
+              </tr>
+            ) : (
+              data.map((item: IProduct, index) => (
+                <tr key={index}>
+                  <td className="border p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                  <td className="border p-2">{item.nama}</td>
+                  <td className="border p-2">Rp {item.harga}</td>
+                  <td className="border p-2">{item.isPromo ? '✅' : '❌'}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex justify-center mt-4 gap-2">
-        <button
-          className="px-4 py-2 border rounded disabled:opacity-50"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Prev
-        </button>
-        <span className="px-4 py-2">Page {currentPage} of {totalPages}</span>
-        <button
-          className="px-4 py-2 border rounded disabled:opacity-50"
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
-      </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-4 gap-2">
+          <button
+            className="px-4 py-2 border rounded disabled:opacity-50"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </button>
+          <span className="px-4 py-2">Page {currentPage} of {totalPages}</span>
+          <button
+            className="px-4 py-2 border rounded disabled:opacity-50"
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
