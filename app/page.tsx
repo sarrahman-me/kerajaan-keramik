@@ -1,6 +1,7 @@
 'use client';
 
 import { IProduct } from '@/interface/product';
+import { formatCurrency } from '@/utils/formating';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
@@ -83,11 +84,11 @@ export default function Home() {
               </tr>
             ) : (
               data.map((item: IProduct, index) => (
-                <tr key={index}>
-                  <td className="border p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                  <td className="border p-2">{item.nama}</td>
-                  <td className="border p-2">Rp {item.harga}</td>
-                  <td className="border p-2">{item.isPromo ? '✅' : '❌'}</td>
+                <tr key={index} className="text-sm md:text-base">
+                  <td className="border p-1 md:p-2 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                  <td className="border p-1 md:p-2">{item.nama}</td>
+                  <td className="border p-1 md:p-2">{formatCurrency(item.harga)}</td>
+                  <td className="border p-1 md:p-2 text-center">{item.isPromo ? '✅' : '❌'}</td>
                 </tr>
               ))
             )}
