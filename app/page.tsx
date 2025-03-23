@@ -12,6 +12,10 @@ export default function Home() {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   // Debounce untuk menunda request API saat user mengetik
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -29,7 +33,7 @@ export default function Home() {
 
     setIsLoading(true); // Set loading sebelum fetch
 
-    fetch(`/api/products?page=${currentPage}&limit=${itemsPerPage}&search=${debouncedSearchTerm}`, { signal })
+    fetch(`/api/products?page=${currentPage}&limit=${itemsPerPage}&search=${encodeURIComponent(debouncedSearchTerm)}`, { signal })
       .then((res) => res.json())
       .then((result) => {
         setData(result.data);
@@ -51,7 +55,7 @@ export default function Home() {
 
       {/* Search Input */}
       <input
-        type="text"
+        type="search"
         placeholder="Cari produk..."
         className="w-full p-2 border rounded mb-4"
         value={searchTerm}
