@@ -4,7 +4,8 @@ import { IProduct } from '@/interface/product';
 import { formatCurrency } from '@/utils/formating';
 import { Confirm, Notify } from 'notiflix';
 import { useEffect, useState } from 'react';
-import { FaTrashAlt } from 'react-icons/fa';
+import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
+import { RxCross2 } from "react-icons/rx";
 
 export default function DataTable() {
   const [data, setData] = useState([]);
@@ -64,6 +65,7 @@ export default function DataTable() {
 
           if (res.ok) {
             setData((prevData) => prevData.filter((item: IProduct) => item.nama !== nama));
+            Notify.success("Berhasil menghapus data");
           } else {
             Notify.failure(result.error || 'Gagal menghapus produk');
           }
@@ -78,9 +80,7 @@ export default function DataTable() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-xl md:text-2xl font-bold mb-4">Daftar Barang</h1>
-
+    <div>
       <input
         type="search"
         placeholder="Cari produk..."
@@ -115,11 +115,22 @@ export default function DataTable() {
                   <td className="border p-1 md:p-2 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                   <td className="border p-1 md:p-2">{item.nama}</td>
                   <td className="border p-1 md:p-2">{formatCurrency(item.harga)}</td>
-                  <td className="border p-1 md:p-2 text-center">{item.isPromo ? '✅' : '❌'}</td>
+                  <td className="border p-1 md:p-2 text-center place-items-center">{item.isPromo ? '✅' : <RxCross2 />}</td>
                   <td className="border p-1 md:p-2 text-center">
-                    <button onClick={() => handleDelete(item.nama)} className="cursor-pointer text-red-500 hover:text-red-700">
-                      <FaTrashAlt />
-                    </button>
+                    <div className="flex justify-around items-center">
+                      <button
+                        onClick={() => alert(encodeURIComponent(item.nama))}
+                        className="cursor-pointer text-orange-500 hover:text-orange-700"
+                      >
+                        <FaPencilAlt />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(encodeURIComponent(item.nama))}
+                        className="cursor-pointer text-red-500 hover:text-red-700"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
