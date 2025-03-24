@@ -34,8 +34,8 @@ export async function POST(req: Request) {
     const collection = db.collection('products');
 
     const body = await req.json();
-    if (!body.nama || !body.harga) {
-      return NextResponse.json({ error: 'Nama dan harga harus diisi' }, { status: 400 });
+    if (!body.nama) {
+      return NextResponse.json({ error: 'Nama harus diisi' }, { status: 400 });
     }
 
     const existingProduct = await collection.findOne({ nama: body.nama });

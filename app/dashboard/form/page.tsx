@@ -39,7 +39,7 @@ export default function Page() {
       }
 
       Notify.success("Produk berhasil ditambahkan!");
-      router.push("/");
+      router.push("/dashboard");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       Notify.failure(err.message);
