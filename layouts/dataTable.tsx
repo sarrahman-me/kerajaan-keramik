@@ -105,7 +105,7 @@ export default function DataTable() {
               <tr>
                 <td colSpan={5} className="text-center p-4">Loading...</td>
               </tr>
-            ) : data.length === 0 ? (
+            ) : data?.length === 0 ? (
               <tr>
                 <td colSpan={5} className="text-center p-4 text-red-500">Produk tidak ditemukan</td>
               </tr>
@@ -120,7 +120,7 @@ export default function DataTable() {
                     <div className="flex justify-around items-center">
                       <button
                         onClick={() => alert(encodeURIComponent(item.nama))}
-                        className="cursor-pointer text-orange-500 hover:text-orange-700"
+                        className="cursor-pointer mr-5 text-orange-500 hover:text-orange-700"
                       >
                         <FaPencilAlt />
                       </button>

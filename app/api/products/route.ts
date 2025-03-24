@@ -1,12 +1,9 @@
 import { NextResponse } from 'next/server';
-import { MongoClient } from 'mongodb';
-
-const uri = process.env.DB_HOST || "";
-const client = new MongoClient(uri);
+import clientPromise from '@/lib/db';
 
 export async function GET(req: Request) {
   try {
-    await client.connect();
+    const client = await clientPromise;
     const db = client.db('kerajaankeramik');
     const collection = db.collection('products');
 
@@ -27,14 +24,12 @@ export async function GET(req: Request) {
     return NextResponse.json({ data, totalPages });
   } catch (error) {
     return NextResponse.json({ error: 'Gagal mengambil data: ' + error }, { status: 500 });
-  } finally {
-    await client.close();
   }
 }
 
 export async function POST(req: Request) {
   try {
-    await client.connect();
+    const client = await clientPromise;
     const db = client.db('kerajaankeramik');
     const collection = db.collection('products');
 
@@ -52,14 +47,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: 'Produk berhasil ditambahkan', id: result.insertedId });
   } catch (error) {
     return NextResponse.json({ error: 'Gagal menambahkan produk: ' + error }, { status: 500 });
-  } finally {
-    await client.close();
   }
 }
 
 export async function DELETE(req: Request) {
   try {
-    await client.connect();
+    const client = await clientPromise;
     const db = client.db('kerajaankeramik');
     const collection = db.collection('products');
 
@@ -79,7 +72,5 @@ export async function DELETE(req: Request) {
   } catch (error) {
     console.error("Error saat menghapus produk:", error);
     return NextResponse.json({ error: 'Gagal menghapus produk: ' + error }, { status: 500 });
-  } finally {
-    await client.close();
   }
 }
