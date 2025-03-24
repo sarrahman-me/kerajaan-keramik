@@ -31,3 +31,55 @@ export async function GET(req: Request) {
     await client.close();
   }
 }
+
+export async function POST(req: Request) {
+  try {
+    await client.connect();
+    const db = client.db('kerajaankeramik');
+    const collection = db.collection('products');
+
+    const body = await req.json();
+    if (!body.nama || !body.harga) {
+      return NextResponse.json({ error: 'Nama dan harga harus diisi' }, { status: 400 });
+    }
+
+    const existingProduct = await collection.findOne({ nama: body.nama });
+    if (existingProduct) {
+      return NextResponse.json({ error: 'Nama produk sudah ada' }, { status: 400 });
+    }
+
+    const result = await collection.insertOne(body);
+    return NextResponse.json({ message: 'Produk berhasil ditambahkan', id: result.insertedId });
+  } catch (error) {
+    return NextResponse.json({ error: 'Gagal menambahkan produk: ' + error }, { status: 500 });
+  } finally {
+    await client.close();
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    await client.connect();
+    const db = client.db('kerajaankeramik');
+    const collection = db.collection('products');
+
+    const { searchParams } = new URL(req.url);
+    const nama = searchParams.get('nama');
+
+    if (!nama) {
+      return NextResponse.json({ error: 'Nama produk diperlukan untuk menghapus' }, { status: 400 });
+    }
+
+    const result = await collection.deleteOne({ nama });
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: 'Produk tidak ditemukan' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: `Produk '${nama}' berhasil dihapus` });
+  } catch (error) {
+    console.error("Error saat menghapus produk:", error);
+    return NextResponse.json({ error: 'Gagal menghapus produk: ' + error }, { status: 500 });
+  } finally {
+    await client.close();
+  }
+}
