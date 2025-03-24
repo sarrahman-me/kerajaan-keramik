@@ -2,7 +2,9 @@ interface textfieldProps {
   type?: string;
   label?: string;
   placeholder?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (v: any) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value?: any;
   disabled?: boolean;
 }

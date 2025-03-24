@@ -40,6 +40,7 @@ export default function Page() {
 
       Notify.success("Produk berhasil ditambahkan!");
       router.push("/");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       Notify.failure(err.message);
     } finally {
