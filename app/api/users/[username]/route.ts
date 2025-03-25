@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 
-export async function GET(
-  req: Request,
-) {
+interface Context {
+  params: { username: string };
+}
+
+export async function GET(req: Request, context: Context) {
   try {
-    const { searchParams } = new URL(req.url);
-    const username = searchParams.get("username");
+    const { username } = context.params;
 
     if (!username) {
       return NextResponse.json({ error: 'Username diperlukan' }, { status: 400 });
@@ -25,9 +26,8 @@ export async function GET(
       return NextResponse.json({ error: 'Pengguna tidak ditemukan' }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return NextResponse.json({ error: 'Gagal mengambil data pengguna: ' + error.message }, { status: 500 });
+    return NextResponse.json(user);
+  } catch (error) {
+    return NextResponse.json({ error: 'Gagal mengambil data pengguna: ' + error }, { status: 500 });
   }
 }

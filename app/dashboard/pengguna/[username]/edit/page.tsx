@@ -34,9 +34,9 @@ export default function Page() {
         if (!response.ok) throw new Error(result.error || "Gagal mengambil data pengguna");
 
         setData({
-          username: result.user.username,
+          username: result.username,
           password: "",
-          permissions: result.user.permissions || { canAdd: false, canEdit: false, canDelete: false }
+          permissions: result.permissions || { canAdd: false, canEdit: false, canDelete: false }
         });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {

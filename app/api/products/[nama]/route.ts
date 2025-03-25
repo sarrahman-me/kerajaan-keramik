@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 
+interface Context {
+  params: { nama: string };
+}
+
 // GET Single Product by Nama
-export async function GET(req: Request) {
+export async function GET(req: Request, context: Context) {
   try {
+    const { nama } = context.params;
     const client = await clientPromise;
     const db = client.db('kerajaankeramik');
     const collection = db.collection('products');
 
-    const { searchParams } = new URL(req.url);
-    const nama = searchParams.get("nama");
-
-    const product = await collection.findOne({ nama: nama });
+    const product = await collection.findOne({ nama });
 
     if (!product) {
       return NextResponse.json({ error: 'Produk tidak ditemukan' }, { status: 404 });
@@ -24,15 +26,12 @@ export async function GET(req: Request) {
 }
 
 // PATCH Edit Product by Nama
-export async function PATCH(req: Request) {
+export async function PATCH(req: Request, context: Context) {
   try {
+    const { nama } = context.params;
     const client = await clientPromise;
     const db = client.db('kerajaankeramik');
     const collection = db.collection('products');
-
-    const { searchParams } = new URL(req.url);
-    const nama = searchParams.get("nama");
-
 
     const updates = await req.json();
     if (!updates || Object.keys(updates).length === 0) {
@@ -40,7 +39,7 @@ export async function PATCH(req: Request) {
     }
 
     const result = await collection.updateOne(
-      { nama: nama },
+      { nama },
       { $set: { ...updates, updatedAt: new Date() } }
     );
 
