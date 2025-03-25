@@ -5,8 +5,10 @@ import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 import { Confirm, Notify } from 'notiflix';
 import { RxCross2 } from 'react-icons/rx';
 import { IUser } from '@/interface/user';
+import { useRouter } from 'next/navigation';
 
 export default function UserTable() {
+  const router = useRouter()
   const [users, setUsers] = useState<IUser[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -81,7 +83,7 @@ export default function UserTable() {
                   <td className="border p-1 md:p-2 text-center">
                     <div className="flex justify-around items-center">
                       <button
-                        onClick={() => alert(`Edit: ${user.username}`)}
+                        onClick={() => router.push(`/dashboard/pengguna/${user.username}/edit`)}
                         className="cursor-pointer mr-5 text-orange-500 hover:text-orange-700"
                       >
                         <FaPencilAlt />
