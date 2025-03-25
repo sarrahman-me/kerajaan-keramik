@@ -1,6 +1,6 @@
+import { jwtDecode } from "jwt-decode";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtDecode } from "jwt-decode";
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!token) {
-    if (pathname.startsWith("/dashboard")) {
+    if (pathname.startsWith("/dashboard") || pathname === "/") {
       return NextResponse.redirect(`${origin}/login`);
     }
     return NextResponse.next();
