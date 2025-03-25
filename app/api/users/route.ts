@@ -1,0 +1,110 @@
+import { NextResponse } from 'next/server';
+import clientPromise from '@/lib/db';
+import bcrypt from 'bcrypt';
+
+export async function GET() {
+  try {
+    const client = await clientPromise;
+    const db = client.db('kerajaankeramik');
+    const collection = db.collection('users');
+
+    const users = await collection.find({}, { projection: { password: 0 } }).toArray();
+
+    return NextResponse.json({ users });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return NextResponse.json({ error: 'Gagal mengambil data pengguna' + error }, { status: 500 });
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const client = await clientPromise;
+    const db = client.db('kerajaankeramik');
+    const collection = db.collection('users');
+
+    const { username, password, permissions } = await req.json();
+
+    if (!username || !password) {
+      return NextResponse.json({ error: 'Username dan password harus diisi' }, { status: 400 });
+    }
+
+    const existingUser = await collection.findOne({ username });
+    if (existingUser) {
+      return NextResponse.json({ error: 'Username sudah digunakan' }, { status: 400 });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = {
+      username,
+      password: hashedPassword,
+      permissions: permissions || { canAdd: false, canEdit: false, canDelete: false },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    const result = await collection.insertOne(newUser);
+    return NextResponse.json({ message: 'Pengguna berhasil ditambahkan', id: result.insertedId });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return NextResponse.json({ error: 'Gagal menambahkan pengguna' + error }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const client = await clientPromise;
+    const db = client.db('kerajaankeramik');
+    const collection = db.collection('users');
+
+    const { username, permissions } = await req.json();
+
+    if (!username || !permissions) {
+      return NextResponse.json({ error: 'Username dan izin akses harus diisi' }, { status: 400 });
+    }
+
+    const result = await collection.updateOne(
+      { username },
+      { $set: { permissions, updatedAt: new Date() } }
+    );
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ error: 'Pengguna tidak ditemukan' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: `Izin akses pengguna '${username}' diperbarui` });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return NextResponse.json({ error: 'Gagal memperbarui izin akses' + error }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const client = await clientPromise;
+    const db = client.db('kerajaankeramik');
+    const collection = db.collection('users');
+
+    const { searchParams } = new URL(req.url);
+    const username = searchParams.get('username');
+
+    if (!username) {
+      return NextResponse.json({ error: 'Username diperlukan untuk menghapus' }, { status: 400 });
+    }
+
+    if (username === 'superadmin') {
+      return NextResponse.json({ error: 'Admin utama tidak bisa dihapus' }, { status: 403 });
+    }
+
+    const result = await collection.deleteOne({ username });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: 'Pengguna tidak ditemukan' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: `Pengguna '${username}' berhasil dihapus` });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return NextResponse.json({ error: 'Gagal menghapus pengguna' + error }, { status: 500 });
+  }
+}
