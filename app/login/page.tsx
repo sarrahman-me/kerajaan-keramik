@@ -4,6 +4,7 @@ import Textfield from "@/components/textfield";
 import beach from "@/public/images/login-image.png";
 import logo from "@/public/images/logo.png";
 import Image from "next/image";
+import { Loading, Notify } from "notiflix";
 import { FormEvent, useState } from "react";
 
 export default function LoginPage() {
@@ -15,8 +16,29 @@ export default function LoginPage() {
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
+    Loading.standard();
 
-    alert('oke')
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        Notify.failure(data.error || "Login gagal");
+        return;
+      }
+
+      Notify.success("Login berhasil!");
+      window.location.href = "/dashboard";
+    } catch (error) {
+      Notify.failure("Terjadi kesalahan:" + error);
+    }
+
+    Loading.remove()
   };
 
   return (

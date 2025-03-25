@@ -30,19 +30,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Username atau password salah' }, { status: 401 });
     }
 
-    // Buat token JWT
+    // Buat token JWT dengan masa berlaku 1 hari
     const token = jwt.sign(
       { username: user.username, permissions: user.permissions },
       SECRET_KEY,
-      { expiresIn: '1h' } // Token berlaku selama 1 jam
+      { expiresIn: '1d' } // Token berlaku selama 1 hari
     );
 
-    // Simpan token di cookie HTTPOnly
+    // Simpan token di cookie HTTPOnly dengan masa berlaku 1 hari
     const response = NextResponse.json({ message: 'Login berhasil' });
     response.cookies.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 3600, // 1 jam
+      maxAge: 86400, // 1 hari dalam detik (24 jam * 60 menit * 60 detik)
       path: '/',
     });
 
