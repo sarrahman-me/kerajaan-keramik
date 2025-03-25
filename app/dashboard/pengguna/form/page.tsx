@@ -1,5 +1,6 @@
 "use client"
 import Button from '@/components/button';
+import SwitchToggle from '@/components/switchToggle';
 import Textfield from '@/components/textfield';
 import { useRouter } from 'next/navigation';
 import { Loading, Notify } from 'notiflix';
@@ -11,6 +12,11 @@ export default function Page() {
   const [data, setData] = useState({
     username: "",
     password: "",
+    permissions: {
+      canAdd: false,
+      canEdit: false,
+      canDelete: false
+    }
   })
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -22,7 +28,7 @@ export default function Page() {
     setError("");
 
     try {
-      const response = await fetch('/api/products', {
+      const response = await fetch('/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -36,8 +42,8 @@ export default function Page() {
         throw new Error(result.error || "Gagal menyimpan data");
       }
 
-      Notify.success("Produk berhasil ditambahkan!");
-      router.push("/dashboard");
+      Notify.success("Berhasil menambahkan pengguna baru");
+      router.push("/dashboard/pengguna");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       Notify.failure(err.message);
@@ -56,6 +62,9 @@ export default function Page() {
       <form onSubmit={handleSubmit} className="space-y-6 my-6 w-full md:w-1/2">
         <Textfield onChange={(value) => setData({ ...data, username: value })} value={data.username} label="Username" />
         <Textfield type="password" onChange={(value) => setData({ ...data, password: value })} value={data.password} label="Password" />
+        <SwitchToggle setValue={(value) => setData({ ...data, permissions: { ...data.permissions, canAdd: value } })} value={data.permissions.canAdd} label="Akses Tambah Data Barang" />
+        <SwitchToggle setValue={(value) => setData({ ...data, permissions: { ...data.permissions, canEdit: value } })} value={data.permissions.canEdit} label="Akses Edit Data Barang" />
+        <SwitchToggle setValue={(value) => setData({ ...data, permissions: { ...data.permissions, canDelete: value } })} value={data.permissions.canDelete} label="Akses Hapus Data Barang" />
         <Button fullWidth type="submit" disabled={loading}>
           {loading ? "Menyimpan..." : "Simpan"}
         </Button>
