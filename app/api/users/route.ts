@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 import bcrypt from 'bcrypt';
+import { IUser } from '@/interface/user';
 
 export async function GET() {
   try {
@@ -57,25 +58,34 @@ export async function PATCH(req: Request) {
     const db = client.db('kerajaankeramik');
     const collection = db.collection('users');
 
-    const { username, permissions } = await req.json();
+    const { username, permissions, password } = await req.json();
 
-    if (!username || !permissions) {
-      return NextResponse.json({ error: 'Username dan izin akses harus diisi' }, { status: 400 });
+    if (!username) {
+      return NextResponse.json({ error: 'Username harus diisi' }, { status: 400 });
     }
 
-    const result = await collection.updateOne(
-      { username },
-      { $set: { permissions, updatedAt: new Date() } }
-    );
+    const updateFields: IUser = { updatedAt: new Date() };
+
+    if (permissions) {
+      updateFields.permissions = permissions;
+    }
+
+    if (password) {
+      if (password.length < 6) {
+        return NextResponse.json({ error: 'Password minimal 6 karakter' }, { status: 400 });
+      }
+      updateFields.password = await bcrypt.hash(password, 10);
+    }
+
+    const result = await collection.updateOne({ username }, { $set: updateFields });
 
     if (result.matchedCount === 0) {
       return NextResponse.json({ error: 'Pengguna tidak ditemukan' }, { status: 404 });
     }
 
-    return NextResponse.json({ message: `Izin akses pengguna '${username}' diperbarui` });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return NextResponse.json({ error: 'Gagal memperbarui izin akses' + error }, { status: 500 });
+    return NextResponse.json({ message: `Data pengguna '${username}' berhasil diperbarui` });
+  } catch (error) {
+    return NextResponse.json({ error: 'Gagal memperbarui pengguna: ' + error }, { status: 500 });
   }
 }
 
