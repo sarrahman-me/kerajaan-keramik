@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 
 export async function GET(
-  _: Request,
-  { params }: { params: { username: string } }
+  req: Request,
 ) {
   try {
-    const { username } = await params;
+    const { searchParams } = new URL(req.url);
+    const username = searchParams.get("username");
 
     if (!username) {
       return NextResponse.json({ error: 'Username diperlukan' }, { status: 400 });

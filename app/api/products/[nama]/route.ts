@@ -2,13 +2,16 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 
 // GET Single Product by Nama
-export async function GET(_: Request, { params }: { params: { nama: string } }) {
+export async function GET(req: Request) {
   try {
     const client = await clientPromise;
     const db = client.db('kerajaankeramik');
     const collection = db.collection('products');
 
-    const product = await collection.findOne({ nama: params.nama });
+    const { searchParams } = new URL(req.url);
+    const nama = searchParams.get("nama");
+
+    const product = await collection.findOne({ nama: nama });
 
     if (!product) {
       return NextResponse.json({ error: 'Produk tidak ditemukan' }, { status: 404 });
@@ -21,11 +24,15 @@ export async function GET(_: Request, { params }: { params: { nama: string } }) 
 }
 
 // PATCH Edit Product by Nama
-export async function PATCH(req: Request, { params }: { params: { nama: string } }) {
+export async function PATCH(req: Request) {
   try {
     const client = await clientPromise;
     const db = client.db('kerajaankeramik');
     const collection = db.collection('products');
+
+    const { searchParams } = new URL(req.url);
+    const nama = searchParams.get("nama");
+
 
     const updates = await req.json();
     if (!updates || Object.keys(updates).length === 0) {
@@ -33,7 +40,7 @@ export async function PATCH(req: Request, { params }: { params: { nama: string }
     }
 
     const result = await collection.updateOne(
-      { nama: params.nama },
+      { nama: nama },
       { $set: { ...updates, updatedAt: new Date() } }
     );
 
@@ -41,7 +48,7 @@ export async function PATCH(req: Request, { params }: { params: { nama: string }
       return NextResponse.json({ error: 'Produk tidak ditemukan' }, { status: 404 });
     }
 
-    return NextResponse.json({ message: `Produk '${params.nama}' berhasil diperbarui` });
+    return NextResponse.json({ message: `Produk '${nama}' berhasil diperbarui` });
   } catch (error) {
     return NextResponse.json({ error: 'Gagal memperbarui produk: ' + error }, { status: 500 });
   }

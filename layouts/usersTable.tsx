@@ -77,9 +77,9 @@ export default function UserTable() {
                 <tr key={index} className="text-sm md:text-base">
                   <td className="border p-1 md:p-2 text-center">{index + 1}</td>
                   <td className="border p-1 md:p-2">{user.username}</td>
-                  <td className="border p-1 md:p-2 text-center place-items-center">{user.permissions.canAdd ? '✅' : <RxCross2 />}</td>
-                  <td className="border p-1 md:p-2 text-center place-items-center">{user.permissions.canEdit ? '✅' : <RxCross2 />}</td>
-                  <td className="border p-1 md:p-2 text-center place-items-center">{user.permissions.canDelete ? '✅' : <RxCross2 />}</td>
+                  <td className="border p-1 md:p-2 text-center place-items-center">{user.permissions?.canAdd ? '✅' : <RxCross2 />}</td>
+                  <td className="border p-1 md:p-2 text-center place-items-center">{user.permissions?.canEdit ? '✅' : <RxCross2 />}</td>
+                  <td className="border p-1 md:p-2 text-center place-items-center">{user.permissions?.canDelete ? '✅' : <RxCross2 />}</td>
                   <td className="border p-1 md:p-2 text-center">
                     <div className="flex justify-around items-center">
                       <button
@@ -90,7 +90,7 @@ export default function UserTable() {
                       </button>
                       {user.username !== 'superadmin' && (
                         <button
-                          onClick={() => handleDelete(user.username)}
+                          onClick={() => handleDelete(user.username || "")}
                           className="cursor-pointer text-red-500 hover:text-red-700"
                         >
                           <FaTrashAlt />

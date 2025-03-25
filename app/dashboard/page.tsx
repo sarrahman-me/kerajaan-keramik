@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   description: "Toko keramik dan granit samarinda",
 }
 
-export default function Home() {
-  const cookieStore = cookies();
+export default async function Home() {
+  const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
   if (!token) {
