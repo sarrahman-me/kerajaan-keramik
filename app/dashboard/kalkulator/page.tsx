@@ -8,9 +8,13 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <div className="space-y-5">
+      <div className="flex justify-between my-2 items-center">
+        <h1 className="text-xl md:text-2xl font-bold">Kalkulator</h1>
+      </div>
+
       <Kalkulator />
       <div className="bg-white border rounded-sm p-2 space-y-3">
-        <p className="bg-secondary text-primary-900 py-1 px-2 rounded-sm font-medium text-lg">
+        <p className="bg-secondary text-blue-900 py-1 px-2 rounded-sm font-medium text-lg">
           Rumus Perhitungan
         </p>
         <div className="space-y-4">

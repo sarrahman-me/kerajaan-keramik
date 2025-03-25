@@ -109,7 +109,7 @@ const Kalkulator = () => {
 
       {/* hasil perhitungan */}
       <div className="bg-white border rounded-sm p-1 md:p-2 space-y-3">
-        <p className="bg-secondary text-primary-900 p-0.5 rounded-sm font-medium text-lg">
+        <p className="bg-secondary text-blue-900 p-0.5 rounded-sm font-medium text-lg">
           Hasil Perhitungan
         </p>
         <DisplayData title="Kebutuhan" data={`${result.kebutuhan || 0} Dus`} />

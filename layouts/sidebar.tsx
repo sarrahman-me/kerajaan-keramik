@@ -1,6 +1,4 @@
 "use client";
-
-import { ReactElement } from "react";
 import { MdOutlineDashboard } from "react-icons/md";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { BiMath } from "react-icons/bi";
@@ -8,14 +6,10 @@ import { isActivePage } from "@/utils/isActivePage";
 import { usePathname, useRouter } from "next/navigation";
 import { CiLogout } from "react-icons/ci";
 import { Confirm } from "notiflix";
+import { IMenu } from "@/interface/menu";
 
-interface menuInterface {
-  title: string;
-  icon: ReactElement;
-  href: string;
-}
 
-const dashboard_menu_dekstop: menuInterface[] = [
+const dashboard_menu_dekstop: IMenu[] = [
   {
     title: "Dashboard",
     icon: <MdOutlineDashboard />,

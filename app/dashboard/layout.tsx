@@ -1,6 +1,7 @@
 import Sidebar from "@/layouts/sidebar";
 import React from "react";
 import { Metadata } from "next";
+import BottomBar from "@/layouts/bottomBar";
 
 export const metadata: Metadata = {
   robots: {
@@ -43,7 +44,7 @@ export default async function DashboardLayout({
 
       {/* bottom menu (mobile) */}
       <div className="p-2 bg-secondary sticky w-full bottom-0 block md:hidden select-none">
-        <p>Bottom Bar</p>
+        <BottomBar />
       </div>
     </main>
   );
