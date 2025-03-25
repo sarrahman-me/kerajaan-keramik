@@ -2,12 +2,14 @@
 
 import { IProduct } from '@/interface/product';
 import { formatCurrency } from '@/utils/formating';
+import { useRouter } from 'next/navigation';
 import { Confirm, Notify } from 'notiflix';
 import { useEffect, useState } from 'react';
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 import { RxCross2 } from "react-icons/rx";
 
 export default function DataTable() {
+  const router = useRouter();
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 50;
@@ -110,7 +112,7 @@ export default function DataTable() {
                 <td colSpan={5} className="text-center p-4 text-red-500">Produk tidak ditemukan</td>
               </tr>
             ) : (
-              data.map((item: IProduct, index) => (
+              data?.map((item: IProduct, index) => (
                 <tr key={index} className="text-sm md:text-base">
                   <td className="border p-1 md:p-2 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                   <td className="border p-1 md:p-2">{item.nama}</td>
@@ -119,7 +121,7 @@ export default function DataTable() {
                   <td className="border p-1 md:p-2 text-center">
                     <div className="flex justify-around items-center">
                       <button
-                        onClick={() => alert(encodeURIComponent(item.nama))}
+                        onClick={() => router.push(`/dashboard/barang/${encodeURIComponent(item.nama)}/edit`)}
                         className="cursor-pointer mr-5 text-orange-500 hover:text-orange-700"
                       >
                         <FaPencilAlt />
