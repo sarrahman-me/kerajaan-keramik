@@ -36,9 +36,10 @@ export default function LoginPage() {
       window.location.href = "/dashboard";
     } catch (error) {
       Notify.failure("Terjadi kesalahan:" + error);
+    } finally {
+      Loading.remove()
     }
 
-    Loading.remove()
   };
 
   return (

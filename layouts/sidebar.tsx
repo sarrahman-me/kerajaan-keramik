@@ -1,11 +1,13 @@
-
 "use client";
 
 import { ReactElement } from "react";
 import { MdOutlineDashboard } from "react-icons/md";
 import { HiOutlineUsers } from "react-icons/hi2";
+import { BiMath } from "react-icons/bi";
 import { isActivePage } from "@/utils/isActivePage";
 import { usePathname, useRouter } from "next/navigation";
+import { CiLogout } from "react-icons/ci";
+import { Confirm } from "notiflix";
 
 interface menuInterface {
   title: string;
@@ -20,6 +22,11 @@ const dashboard_menu_dekstop: menuInterface[] = [
     href: "/dashboard",
   },
   {
+    title: "Kalkulator",
+    icon: <BiMath />,
+    href: "/dashboard/kalkulator",
+  },
+  {
     title: "Kelola Pengguna",
     icon: <HiOutlineUsers />,
     href: "/dashboard/pengguna",
@@ -30,6 +37,31 @@ const dashboard_menu_dekstop: menuInterface[] = [
 const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
+
+  const handleLogout = async () => {
+    Confirm.show(
+      'Konfirmasi',
+      'Ingin keluar dari aplikasi ?',
+      'Keluar',
+      'Tidak',
+      async () => {
+        try {
+          const res = await fetch("/api/logout", {
+            method: "POST",
+          });
+
+          if (res.ok) {
+            router.push("/login");
+          }
+        } catch (error) {
+          console.error("Logout gagal:", error);
+        }
+      },
+      () => { },
+      { okButtonBackground: "red", titleColor: "red" },
+    );
+  };
+
 
   return (
     <aside className="space-y-10 select-none">
@@ -61,6 +93,17 @@ const Sidebar = () => {
             </div>
           );
         })}
+        <div
+          onClick={handleLogout}
+          className={`flex items-center space-x-3 p-2 rounded-sm text-secondary-medium cursor-pointer select-none hover:bg-red-50`}
+        >
+          <span
+            className={`text-lg text-red-600`}
+          >
+            <CiLogout />
+          </span>
+          <p className="lg:block hidden">Keluar</p>
+        </div>
       </div>
     </aside>
   );
