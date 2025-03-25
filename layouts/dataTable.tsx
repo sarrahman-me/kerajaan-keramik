@@ -1,6 +1,7 @@
 'use client';
 
 import { IProduct } from '@/interface/product';
+import { IPermissions } from '@/interface/profile';
 import { formatCurrency } from '@/utils/formating';
 import { useRouter } from 'next/navigation';
 import { Confirm, Notify } from 'notiflix';
@@ -8,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 import { RxCross2 } from "react-icons/rx";
 
-export default function DataTable() {
+export default function DataTable({ permissions }: { permissions: IPermissions }) {
   const router = useRouter();
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -99,17 +100,19 @@ export default function DataTable() {
               <th className="border p-2">Nama</th>
               <th className="border p-2">Harga</th>
               <th className="border p-2">Promo</th>
-              <th className="border p-2">Aksi</th>
+              {permissions.canDelete || permissions.canEdit ? (
+                <th className="border p-2">Aksi</th>
+              ) : null}
             </tr>
           </thead>
           <tbody className="bg-white">
             {isLoading ? (
               <tr>
-                <td colSpan={5} className="text-center p-4">Loading...</td>
+                <td colSpan={permissions.canEdit || permissions.canDelete ? 5 : 4} className="text-center p-4">Loading...</td>
               </tr>
             ) : data?.length === 0 ? (
               <tr>
-                <td colSpan={5} className="text-center p-4 text-red-500">Produk tidak ditemukan</td>
+                <td colSpan={permissions.canEdit || permissions.canDelete ? 5 : 4} className="text-center p-4 text-red-500">Produk tidak ditemukan</td>
               </tr>
             ) : (
               data?.map((item: IProduct, index) => (
@@ -118,22 +121,30 @@ export default function DataTable() {
                   <td className="border p-1 md:p-2">{item.nama}</td>
                   <td className="border p-1 md:p-2">{formatCurrency(item.harga)}</td>
                   <td className="border p-1 md:p-2 text-center place-items-center">{item.isPromo ? '✅' : <RxCross2 />}</td>
-                  <td className="border p-1 md:p-2 text-center">
-                    <div className="flex justify-around items-center">
-                      <button
-                        onClick={() => router.push(`/dashboard/barang/${encodeURIComponent(item.nama)}/edit`)}
-                        className="cursor-pointer mr-5 text-orange-500 hover:text-orange-700"
-                      >
-                        <FaPencilAlt />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(encodeURIComponent(item.nama))}
-                        className="cursor-pointer text-red-500 hover:text-red-700"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    </div>
-                  </td>
+                  {permissions.canDelete || permissions.canEdit ? (
+                    <td className="border p-1 md:p-2 text-center">
+                      <div className="flex justify-around items-center">
+                        {permissions.canEdit && (
+                          <button
+                            onClick={() => router.push(`/dashboard/barang/${encodeURIComponent(item.nama)}/edit`)}
+                            className="cursor-pointer mr-5 text-orange-500 hover:text-orange-700"
+                          >
+                            <FaPencilAlt />
+                          </button>
+
+                        )}
+                        {permissions.canDelete && (
+                          <button
+                            onClick={() => handleDelete(encodeURIComponent(item.nama))}
+                            className="cursor-pointer text-red-500 hover:text-red-700"
+                          >
+                            <FaTrashAlt />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+
+                  ) : null}
                 </tr>
               ))
             )}

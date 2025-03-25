@@ -1,16 +1,6 @@
+import { IProfileData } from "@/interface/profile";
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
-
-interface ProfileData {
-  username: string;
-  permissions: {
-    canAdd: boolean;
-    canEdit: boolean;
-    canDelete: boolean;
-  };
-  iat: number;
-  exp: number;
-}
 
 export default async function Profile() {
   const cookieStore = cookies();
@@ -20,7 +10,7 @@ export default async function Profile() {
     return <div className="text-red-600 text-center mt-10">Token tidak ditemukan. Silakan login kembali.</div>;
   }
 
-  const profile: ProfileData = jwtDecode(token);
+  const profile: IProfileData = jwtDecode(token);
 
   return (
     <div>
