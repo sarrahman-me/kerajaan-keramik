@@ -1,14 +1,10 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 
-interface Context {
-  params: { nama: string };
-}
-
 // GET Single Product by Nama
-export async function GET(req: Request, context: Context) {
+export async function GET(_: Request, { params }: { params: Promise<{ nama: string }> }) {
   try {
-    const { nama } = context.params;
+    const { nama } = await params
     const client = await clientPromise;
     const db = client.db('kerajaankeramik');
     const collection = db.collection('products');
@@ -26,9 +22,9 @@ export async function GET(req: Request, context: Context) {
 }
 
 // PATCH Edit Product by Nama
-export async function PATCH(req: Request, context: Context) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ nama: string }> }) {
   try {
-    const { nama } = context.params;
+    const { nama } = await params
     const client = await clientPromise;
     const db = client.db('kerajaankeramik');
     const collection = db.collection('products');

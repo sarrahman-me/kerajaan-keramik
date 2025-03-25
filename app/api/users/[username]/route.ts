@@ -1,13 +1,9 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 
-interface Context {
-  params: { username: string };
-}
-
-export async function GET(req: Request, context: Context) {
+export async function GET(_: Request, { params }: { params: Promise<{ username: string }> }) {
   try {
-    const { username } = context.params;
+    const { username } = await params
 
     if (!username) {
       return NextResponse.json({ error: 'Username diperlukan' }, { status: 400 });
