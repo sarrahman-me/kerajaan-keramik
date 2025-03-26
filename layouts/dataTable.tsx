@@ -8,6 +8,7 @@ import { Confirm, Notify } from 'notiflix';
 import { useEffect, useState } from 'react';
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 import { RxCross2 } from "react-icons/rx";
+import { GrFormPrevious, GrFormNext, GrChapterNext, GrChapterPrevious } from "react-icons/gr";
 
 export default function DataTable({ permissions }: { permissions: IPermissions }) {
   const router = useRouter();
@@ -153,22 +154,46 @@ export default function DataTable({ permissions }: { permissions: IPermissions }
       </div>
 
       {totalPages > 1 && (
-        <div className="flex justify-center mt-4 gap-2">
-          <button
-            className="bg-white cursor-pointer hover:shadow disabled:shadow-none px-4 py-2 border rounded disabled:opacity-50"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Prev
-          </button>
-          <span className="px-4 py-2">Page {currentPage} of {totalPages}</span>
-          <button
-            className="bg-white cursor-pointer hover:shadow disabled:hover:shadow-none px-4 py-2 border rounded disabled:opacity-50"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
+        <div className="flex justify-between items-center mt-4 gap-2 border bg-white rounded">
+          <span className="px-4 py-2">Halaman {currentPage} dari {totalPages}</span>
+
+          <div>
+            {/* Tombol ke halaman pertama */}
+            <button
+              className="bg-white cursor-pointer px-4 py-2 text-gray-600 hover:text-blue-600 disabled:hover:text-gray-600 rounded disabled:opacity-50"
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+            >
+              <GrChapterPrevious />
+            </button>
+
+            {/* Tombol previous */}
+            <button
+              className="bg-white cursor-pointer px-4 py-2 text-gray-600 hover:text-blue-600 disabled:hover:text-gray-600 rounded disabled:opacity-50"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              <GrFormPrevious />
+            </button>
+
+            {/* Tombol next */}
+            <button
+              className="bg-white cursor-pointer px-4 py-2 text-gray-600 hover:text-blue-600 disabled:hover:text-gray-600 rounded disabled:opacity-50"
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              <GrFormNext />
+            </button>
+
+            {/* Tombol ke halaman terakhir */}
+            <button
+              className="bg-white cursor-pointer px-4 py-2 text-gray-600 hover:text-blue-600 disabled:hover:text-gray-600 rounded disabled:opacity-50"
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+            >
+              <GrChapterNext />
+            </button>
+          </div>
         </div>
       )}
     </div>
