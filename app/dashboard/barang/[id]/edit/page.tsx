@@ -9,7 +9,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 
 export default function EditProductPage() {
   const router = useRouter();
-  const params = useParams<{ nama: string; }>()
+  const params = useParams<{ id: string; }>();
 
   const [data, setData] = useState({
     nama: "",
@@ -21,15 +21,15 @@ export default function EditProductPage() {
 
   // Fetch product data
   useEffect(() => {
-    if (!params.nama) return;
+    if (!params.id) return;
 
     const fetchData = async () => {
       Loading.standard();
       try {
-        const response = await fetch(`/api/products/${params.nama}`);
+        const response = await fetch(`/api/products/${params.id}`);
         const result = await response.json();
 
-        console.log(result)
+        console.log(result);
 
         if (!response.ok) {
           throw new Error(result.error || "Gagal mengambil data produk");
@@ -50,7 +50,7 @@ export default function EditProductPage() {
     };
 
     fetchData();
-  }, [params.nama]);
+  }, [params.id]);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,10 +60,10 @@ export default function EditProductPage() {
     setError("");
 
     try {
-      const response = await fetch(`/api/products/${params.nama}`, {
+      const response = await fetch(`/api/products/${params.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ harga: data.harga, isPromo: data.isPromo }),
+        body: JSON.stringify({ nama: data.nama, harga: data.harga, isPromo: data.isPromo }),
       });
 
       const result = await response.json();
@@ -94,7 +94,7 @@ export default function EditProductPage() {
       </div>
       {error && <p className="text-red-500 text-center">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-6 my-6 w-full md:w-1/2">
-        <Textfield onChange={() => { }} value={data.nama} label="Nama Barang" disabled />
+        <Textfield onChange={(value) => setData({ ...data, nama: value })} value={data.nama} label="Nama Barang" />
         <Textfield
           type="number"
           onChange={(value) => setData({ ...data, harga: Number(value) })}

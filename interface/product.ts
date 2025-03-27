@@ -1,5 +1,6 @@
 export interface IProduct {
-  nama: string,
-  harga: number,
-  isPromo: boolean
+  _id: string;
+  nama: string;
+  harga: number;
+  isPromo: boolean;
 }

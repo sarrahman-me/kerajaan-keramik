@@ -127,7 +127,7 @@ export default function DataTable({ permissions }: { permissions: IPermissions }
                       <div className="flex justify-around items-center">
                         {permissions.canEdit && (
                           <button
-                            onClick={() => router.push(`/dashboard/barang/${encodeURIComponent(item.nama)}/edit`)}
+                            onClick={() => router.push(`/dashboard/barang/${encodeURIComponent(item._id)}/edit`)}
                             className="cursor-pointer mr-5 text-orange-500 hover:text-orange-700"
                           >
                             <FaPencilAlt />
