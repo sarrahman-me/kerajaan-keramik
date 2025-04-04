@@ -117,7 +117,7 @@ export default function DataTable({ permissions }: { permissions: IPermissions }
               </tr>
             ) : (
               data?.map((item: IProduct, index) => (
-                <tr key={index} className="text-sm md:text-base">
+                <tr key={index} className="text-sm md:text-base hover:bg-gray-100">
                   <td className="border p-1 md:p-2 text-center">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                   <td className="border p-1 md:p-2">{item.nama}</td>
                   <td className="border p-1 md:p-2">{formatCurrency(item.harga)}</td>
